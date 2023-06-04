@@ -1,125 +1,235 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Lang_Mobile',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a blue toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+        primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: HomePage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
+class HomePage extends StatefulWidget {
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _HomePageState extends State<HomePage> {
+  int _currentIndex = 0;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  final List<Widget> _pages = [
+    HomePageContent(),
+    SchedulePage(),
+    PageScore(),
+    ProfilePage(),
+  ];
+
+  final List<String> _pageTitles = [
+    'Home',
+    'Schedule',
+    'Score',
+    'Profile',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(_pageTitles[_currentIndex]),
+        centerTitle: true,
+      ),
+      body: _pages[_currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+            backgroundColor: Colors.blue,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.schedule),
+            label: 'Schedule',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.score),
+            label: 'Score',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class HomePageContent extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('Home Page'),
+    );
+  }
+}
+
+class SchedulePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('Schedule Page'),
+    );
+  }
+}
+
+class PageScore extends StatefulWidget {
+  @override
+  _PageScoreState createState() => _PageScoreState();
+}
+
+class _PageScoreState extends State<PageScore> {
+  String _selectedFilter = 'All Classes';
+
+  List<Map<String, dynamic>> _classScores = [
+    {
+      'title': 'Math',
+      'score': 90,
+    },
+    {
+      'title': 'Science',
+      'score': 85,
+    },
+    {
+      'title': 'English',
+      'score': 95,
+    },
+  ];
+
+  List<Map<String, dynamic>> getFilteredClassScores() {
+    if (_selectedFilter == 'All Classes') {
+      return _classScores;
+    } else if (_selectedFilter == 'In Process') {
+      return _classScores.where((classScore) => classScore['score'] < 60).toList();
+    } else if (_selectedFilter == 'Done') {
+      return _classScores.where((classScore) => classScore['score'] >= 60).toList();
+    }
+    return _classScores;
+  }
+
+  Color getColorFromScore(int score) {
+    if (score >= 90) {
+      return Colors.yellow;
+    } else if (score >= 80) {
+      return Colors.orange;
+    } else {
+      return Colors.red;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    List<Map<String, dynamic>> filteredClassScores = getFilteredClassScores();
+
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: DropdownButtonFormField<String>(
+              value: _selectedFilter,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Filter',
+                contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              ),
+              items: [
+                DropdownMenuItem(
+                  value: 'All Classes',
+                  child: Text('All Classes'),
+                ),
+                DropdownMenuItem(
+                  value: 'In Process',
+                  child: Text('In Process'),
+                ),
+                DropdownMenuItem(
+                  value: 'Done',
+                  child: Text('Done'),
+                ),
+              ],
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedFilter = newValue!;
+                });
+              },
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+          ),
+          SizedBox(height: 16),
+          Expanded(
+            child: ListView.builder(
+              itemCount: filteredClassScores.length,
+              itemBuilder: (context, index) {
+                final classScore = filteredClassScores[index];
+                final title = classScore['title'];
+                final score = classScore['score'];
+                final color = getColorFromScore(score);
+
+                return Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  child: Container(
+                    height: 160, // Doubled the height
+                    decoration: BoxDecoration(
+                      color: Colors.blue, // Added background color
+                      borderRadius: BorderRadius.circular(8.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.3),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: ListTile(
+                      title: Text(
+                        title,
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                      ),
+                      subtitle: Text(
+                        'Score: $score',
+                        style: TextStyle(color: color),
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+
+
+class ProfilePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('Profile Page'),
     );
   }
 }
